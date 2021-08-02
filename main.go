@@ -23,17 +23,54 @@ func main(){
 	outJson := flag.String("ojson", "rt.json", "output json file location")
 	flag.Parse()
 
+	/*
+	{
+		peer_id: {
+			peer_id: struct, ...
+		}, ...
+
+	}
+	 */
 	peerMap := make(map[peer.ID]map[peer.ID]struct{})
+	// 初始化能存1000空间的peers 的变量
 	allPeers := make([]*peer.AddrInfo, 0, 1000)
+	/*
+	{
+	    peer_id: struct, ...
+	}
+	 */
 	allPeersSet := make(map[peer.ID]struct{})
 
+	// h : Host
+	// Host is an object participating in a p2p network, which
+	// implements protocols or provides services. It handles
+	// requests like a Server, and issues requests like a Client.
+	// It is called Host because it is both Server and Client (and Peer
+	// may be confusing).
 	h, err := libp2p.New(ctx)
 	if err != nil {
 		panic(err)
 	}
 
 	dhtmock := &IpfsDHT{
-		host:      h,
+		host:      h,  // Host
+		/*
+		type messageSender struct {
+			s   network.Stream
+			r   msgio.ReadCloser
+			lk  ctxMutex
+			p   peer.ID
+			dht *IpfsDHT
+
+			invalid   bool
+			singleMes int
+		}
+
+		{
+			peer_id: messageSender, ...
+		}
+
+		*/
 		strmap:     make(map[peer.ID]*messageSender),
 		protocols: []protocol.ID{"/ipfs/kad/1.0.0"},
 	}
